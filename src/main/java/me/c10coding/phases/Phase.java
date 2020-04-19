@@ -5,12 +5,13 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public abstract class Phase implements PhasePotientials{
+public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
 
-    final protected Phases phaseKey;
-    final protected String phaseName;
-    final protected int threshold;
+    final private Phases phaseKey;
+    final private String phaseName;
+    final private int threshold;
 
     public Phase(Phases phase, int threshold){
         this.phaseName = phase.name();
@@ -18,24 +19,30 @@ public abstract class Phase implements PhasePotientials{
         this.threshold = threshold;
     }
 
-    public String getName(){
+    protected String getName(){
         return phaseName;
     }
 
-    public int getThreshold() {
+    protected int getThreshold() {
         return threshold;
     }
 
+    /*
+    Each Phase will return there mobs, items, and blocks different because they are enums
+     */
     @Override
-    public abstract ArrayList<Entity> getSpawnableMobs();
+    public abstract List<Entity> getSpawnableMobs();
 
     @Override
-    public abstract ArrayList<ItemStack> getPotentialItems();
+    public abstract List<ItemStack> getPotentialItems();
 
     @Override
-    public abstract ArrayList<Material> getPotentialBlocks();
+    public abstract List<Material> getPotentialBlocks();
 
-    public enum Phases{
+    @Override
+    public abstract boolean hasMobs();
+
+    protected enum Phases{
 
         STARTING_PHASE(1),
         TOOLS_PHASE(2);
