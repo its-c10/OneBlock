@@ -42,7 +42,7 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
     @Override
     public abstract boolean hasMobs();
 
-    protected enum Phases{
+    public enum Phases{
 
         STARTING_PHASE(1),
         TOOLS_PHASE(2);

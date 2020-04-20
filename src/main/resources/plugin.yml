@@ -5,3 +5,8 @@ api-version: 1.13
 prefix: OneBlock
 authors: [c10coding]
 description: You spawn with one block in a world. What will you do with it?
+commands:
+  oneblock:
+    aliases:
+      - ob
+    usage: "Basic command for OneBlock"
