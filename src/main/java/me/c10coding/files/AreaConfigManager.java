@@ -79,7 +79,8 @@ public class AreaConfigManager extends ConfigManager{
 
         for(UUID u : playerUUIDsWithAreas){
             OfflinePlayer op = Bukkit.getOfflinePlayer(u);
-            Location loc = ls.toLocationFromPath("Areas." + u + ".Location");
+            String line = config.getString("Areas." + u + ".Location");
+            Location loc = ls.toLocationFromLine(line);
             areaLocs.add(loc);
         }
 
@@ -90,7 +91,8 @@ public class AreaConfigManager extends ConfigManager{
         UUID playerUUID = p.getUniqueId();
         Location areaLocation = null;
         if(hasArea(playerUUID)){
-            areaLocation = ls.toLocationFromPath("Areas." + playerUUID + ".Location");
+            String line = config.getString("Areas." + playerUUID + ".Location");
+            areaLocation = ls.toLocationFromLine(line);
         }
         return areaLocation;
     }

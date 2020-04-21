@@ -46,7 +46,7 @@ public class OneBlockManager {
         if(!acm.hasArea(p.getUniqueId())){
 
             Location uniqueLocation = logicManager.generateUniqueLocation();
-            Location blockLocation = new Location(uniqueLocation.getWorld(), uniqueLocation.getX(), uniqueLocation.getY() + 5, uniqueLocation.getZ());
+            Location teleportationLoc = new Location(uniqueLocation.getWorld(), uniqueLocation.getX(), uniqueLocation.getY() + 0.5, uniqueLocation.getZ());
 
             acm.insertPlayer(p, uniqueLocation);
 
@@ -67,8 +67,8 @@ public class OneBlockManager {
                 e.printStackTrace();
             }
 
-            blockLocation.getBlock().setType(Material.DIRT);
-            p.teleport(uniqueLocation);
+            uniqueLocation.getBlock().setType(Material.DIRT);
+            p.teleport(teleportationLoc);
             Chat.sendPlayerMessage("&lGood luck! You have one block. What will you do with it?", true, p, prefix);
         }else{
             Chat.sendPlayerMessage("You already have an area! To go to it, do &6/ob home", true, p, prefix);

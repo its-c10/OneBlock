@@ -14,7 +14,6 @@ public class PlayersConfigManager extends ConfigManager{
     }
 
     public void validatePlayersConfig(){
-        reload();
         List<String> knownPlayersUUIDs = getKnownPlayers();
 
         if(!knownPlayersUUIDs.isEmpty()){

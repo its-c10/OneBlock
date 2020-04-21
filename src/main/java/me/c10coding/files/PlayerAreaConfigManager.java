@@ -17,7 +17,6 @@ public class PlayerAreaConfigManager extends ConfigManager {
 
     public PlayerAreaConfigManager(OneBlock plugin, String fileName) {
         super(plugin, fileName);
-        this.plugin = plugin;
         this.ls = new LocationSerializer(config);
     }
 
@@ -25,10 +24,12 @@ public class PlayerAreaConfigManager extends ConfigManager {
     Adds the block to the list of blocks in a player's area
      */
     public void addBlock(Block b){
-        reload();
+        reloadConfig();
         List<String> blocksList = config.getStringList("Blocks");
-        blocksList.add(ls.toString(b.getLocation()));
-        config.set("Blocks", blocksList);
+        if(!blocksList.contains(ls.toString(b.getLocation()))){
+            blocksList.add(ls.toString(b.getLocation()));
+            config.set("Blocks", blocksList);
+        }
         saveConfig();
     }
 
@@ -36,10 +37,12 @@ public class PlayerAreaConfigManager extends ConfigManager {
     Removes the block from the list of blocks in a player's area
      */
     public void removeBlock(Block b){
-        reload();
+        reloadConfig();
         List<String> blocksList = config.getStringList("Blocks");
-        blocksList.remove(ls.toString(b.getLocation()));
-        config.set("Blocks", blocksList);
+        if(blocksList.contains(ls.toString(b.getLocation()))){
+            blocksList.remove(ls.toString(b.getLocation()));
+            config.set("Blocks", blocksList);
+        }
         saveConfig();
     }
 

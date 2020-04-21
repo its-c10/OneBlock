@@ -85,6 +85,7 @@ public class OneBlockLogicManager {
 
     public boolean isInsideArea(Block b, Player p){
 
+        ac.reloadConfig();
         Location loc = ac.getPlayerAreaLocation(p);
         Location blockLocation = b.getLocation();
         int size = plugin.getConfig().getInt("Size");

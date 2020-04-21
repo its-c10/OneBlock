@@ -1,6 +1,8 @@
 package me.c10coding.files;
 
 import me.c10coding.OneBlock;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -14,16 +16,16 @@ public class ConfigManager {
     protected OneBlock plugin;
     protected String fileName;
     protected File file;
-    protected FileConfiguration config;
+    protected FileConfiguration config = new YamlConfiguration();
     public String prefix;
 
     public ConfigManager(OneBlock plugin, String fileName){
         this.plugin = plugin;
         this.fileName = fileName;
         this.file = new File(plugin.getDataFolder(), fileName);
-        this.config = YamlConfiguration.loadConfiguration(file);
         this.oneBlockLogger = plugin.getLogger();
         this.prefix = getPluginPrefix();
+        loadConfig();
     }
 
     public ConfigManager(OneBlock plugin){
@@ -36,27 +38,21 @@ public class ConfigManager {
     protected void saveConfig(){
         try {
             config.save(file);
-            reloadConfig();
         }catch(IOException e) {
             plugin.getLogger().warning("Unable to save " + fileName);
         }
     }
 
+    public void loadConfig(){
+        try {
+            config.load(file);
+        } catch (IOException | InvalidConfigurationException e) {
+            plugin.getLogger().warning("Unable to load " + fileName);
+        }
+    }
+
     public void reloadConfig() {
-
-        if (file == null) {
-            file = new File(plugin.getDataFolder(), fileName);
-        }
-
         config = YamlConfiguration.loadConfiguration(file);
-
-        // Look for defaults in the jar
-        Reader defConfigStream = new InputStreamReader(plugin.getResource(fileName), StandardCharsets.UTF_8);
-
-        if (defConfigStream != null) {
-            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-            config.setDefaults(defConfig);
-        }
     }
 
     public static void validateConfigs(OneBlock plugin){
