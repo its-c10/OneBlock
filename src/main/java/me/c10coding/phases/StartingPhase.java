@@ -30,6 +30,9 @@ public class StartingPhase extends Phase{
 
     }
 
+    /*
+    Potential Items
+     */
     public enum Items{
 
         GRASS(new ItemStack(Material.GRASS)),
@@ -53,16 +56,20 @@ public class StartingPhase extends Phase{
 
     @Override
     public List<ItemStack> getPotentialItems() {
-        return null;
+        List<ItemStack> potentialItems = new ArrayList<>();
+        for(Items currentItem : Items.values()){
+            potentialItems.add(currentItem.item);
+        }
+        return potentialItems;
     }
 
     @Override
     public List<Material> getPotentialBlocks() {
-        List<Material> potentialsBlocks = new ArrayList<>();
+        List<Material> potentialBlocks = new ArrayList<>();
         for(Blocks currentBlock : Blocks.values()){
-            potentialsBlocks.add(currentBlock.mat);
+            potentialBlocks.add(currentBlock.mat);
         }
-        return potentialsBlocks;
+        return potentialBlocks;
     }
 
     @Override

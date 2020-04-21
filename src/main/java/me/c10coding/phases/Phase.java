@@ -1,10 +1,12 @@
 package me.c10coding.phases;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
@@ -19,11 +21,11 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
         this.threshold = threshold;
     }
 
-    protected String getName(){
+    public String getName(){
         return phaseName;
     }
 
-    protected int getThreshold() {
+    public int getThreshold() {
         return threshold;
     }
 
@@ -44,9 +46,9 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
 
     public enum Phases{
 
-        STARTING_PHASE(1),
-        TOOLS_PHASE(2),
-        TESTING_PHASE(3);
+        STARTING_PHASE(0),
+        TOOLS_PHASE(1),
+        TESTING_PHASE(2);
 
         private final int numPhase;
         Phases(int numPhase) {
@@ -55,13 +57,13 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
 
         public static List<Phases> getPhasesBefore(Phases currentPhase){
 
-            Phases[] phasesArr = Phases.values();
+            List<Phases> phasesArr = Arrays.asList(Phases.values());
             List<Phases> phasesBefore = new ArrayList<>();
             int numPhase = currentPhase.numPhase;
 
-            if(numPhase != 1){
-                for(int x = numPhase; x > 1; x--){
-                    phasesBefore.add(phasesArr[x]);
+            if(numPhase > 0){
+                for(int x = numPhase; x >= 0; x--){
+                    phasesBefore.add(phasesArr.get(x));
                 }
             }
             return phasesBefore;

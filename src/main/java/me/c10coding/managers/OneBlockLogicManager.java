@@ -158,4 +158,34 @@ public class OneBlockLogicManager {
         }
     }
 
+    public List<Byte> getLog1ByteList(){
+
+        Byte oakLog = 0;
+        Byte spruceLog = 1;
+        Byte birchLog = 2;
+        Byte jungleLog = 3;
+
+        List<Byte> log1Bytes = new ArrayList<>();
+
+        log1Bytes.add(oakLog);
+        log1Bytes.add(spruceLog);
+        log1Bytes.add(birchLog);
+        log1Bytes.add(jungleLog);
+
+        return log1Bytes;
+    }
+
+    public List<Byte> getLog2ByteList(){
+
+        Byte acaciaLog = 0;
+        Byte darkOakLog = 1;
+
+        List<Byte> log2Bytes = new ArrayList<>();
+
+        log2Bytes.add(acaciaLog);
+        log2Bytes.add(darkOakLog);
+        return log2Bytes;
+
+    }
+
 }
