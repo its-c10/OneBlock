@@ -60,7 +60,6 @@ public class AreaConfigManager extends ConfigManager{
     }
 
     public boolean hasArea(UUID u){
-        Bukkit.broadcastMessage(getPlayerUUIDsWithAreas().toString());
         return getPlayerUUIDsWithAreas().contains(u);
     }
 

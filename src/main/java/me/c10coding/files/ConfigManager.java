@@ -4,9 +4,8 @@ import me.c10coding.OneBlock;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.logging.Logger;
 
 public class ConfigManager {
@@ -37,14 +36,27 @@ public class ConfigManager {
     protected void saveConfig(){
         try {
             config.save(file);
+            reloadConfig();
         }catch(IOException e) {
-            e.printStackTrace();
+            plugin.getLogger().warning("Unable to save " + fileName);
         }
     }
 
-    public void reload() {
-        file = new File(plugin.getDataFolder(), fileName);
+    public void reloadConfig() {
+
+        if (file == null) {
+            file = new File(plugin.getDataFolder(), fileName);
+        }
+
         config = YamlConfiguration.loadConfiguration(file);
+
+        // Look for defaults in the jar
+        Reader defConfigStream = new InputStreamReader(plugin.getResource(fileName), StandardCharsets.UTF_8);
+
+        if (defConfigStream != null) {
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            config.setDefaults(defConfig);
+        }
     }
 
     public static void validateConfigs(OneBlock plugin){
