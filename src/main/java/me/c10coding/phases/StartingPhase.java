@@ -5,12 +5,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class StartingPhase extends Phase{
 
-    public StartingPhase(Phases phase, int threshold) {
+    public StartingPhase() {
         super(Phases.STARTING_PHASE, 10);
     }
 

@@ -15,14 +15,18 @@ public class PlayersConfigManager extends ConfigManager{
 
     public void validatePlayersConfig(){
         reload();
-        List<String> knownPlayersUUIDs = config.getStringList("KnownPlayersUUIDs");
-        for(String uuid : knownPlayersUUIDs){
-            OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
-            if(!config.getString("UUIDsAndPlayers." + uuid).equals(op.getName())){
-                String newName = op.getName();
-                config.set("UUIDsAndPlayers." + uuid, newName);
+        List<String> knownPlayersUUIDs = getKnownPlayers();
+
+        if(!knownPlayersUUIDs.isEmpty()){
+            for(String uuid : knownPlayersUUIDs){
+                OfflinePlayer op = Bukkit.getOfflinePlayer(UUID.fromString(uuid));
+                if(!config.getString("UUIDsAndPlayers." + uuid).equals(op.getName())){
+                    String newName = op.getName();
+                    config.set("UUIDsAndPlayers." + uuid, newName);
+                }
             }
         }
+
         saveConfig();
         oneBlockLogger.info("Validated player UUIDs and names!");
     }
@@ -32,9 +36,18 @@ public class PlayersConfigManager extends ConfigManager{
      */
     public void addPlayer(UUID u){
         List<String> knownPlayersUUIDs = config.getStringList("KnownPlayersUUIDs");
+        OfflinePlayer op = Bukkit.getOfflinePlayer(u);
+
         knownPlayersUUIDs.add(u.toString());
+
         config.set("KnownPlayersUUIDs", knownPlayersUUIDs);
+        config.set("UUIDsAndPlayers." + u.toString(), op.getName());
+
         saveConfig();
+    }
+
+    public List<String> getKnownPlayers(){
+        return config.getStringList("KnownPlayersUUIDs");
     }
 
 }
