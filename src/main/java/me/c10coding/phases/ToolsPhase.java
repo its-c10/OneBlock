@@ -19,7 +19,8 @@ public class ToolsPhase extends Phase{
     public enum Blocks{
 
         LOG(Material.LOG),
-        OTHER_LOG(Material.LOG_2);
+        OTHER_LOG(Material.LOG_2),
+        GRAVEL(Material.GRAVEL);
 
         Material mat;
         Blocks(Material mat){
@@ -33,13 +34,19 @@ public class ToolsPhase extends Phase{
      */
     public enum Items{
 
-        GRASS(new ItemStack(Material.GRASS)),
-        SUGAR_CANE(new ItemStack(Material.SUGAR_CANE)),
-        SUGAR(new ItemStack(Material.SUGAR)),
-        ROSE(new ItemStack(Material.RED_ROSE)),
-        WEB(new ItemStack(Material.WEB)),
-        BROWN_MUSHROOM(new ItemStack(Material.BROWN_MUSHROOM)),
-        RED_MUSHROOM(new ItemStack(Material.RED_MUSHROOM));
+        OAK_PLANK(new ItemStack(Material.WOOD, 1, (byte) 0)),
+        SPRUCE_PLANK(new ItemStack(Material.WOOD, 1, (byte) 1)),
+        BIRCH_PLANK(new ItemStack(Material.WOOD, 1, (byte) 2)),
+        JUNGLE_PLANK(new ItemStack(Material.WOOD, 1, (byte) 3)),
+        ACACIA_PLANK(new ItemStack(Material.WOOD, 1, (byte) 4)),
+        DARK_OAK_PLANK(new ItemStack(Material.WOOD, 1, (byte) 5)),
+
+        OAK_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)0)),
+        SPRUCE_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)1)),
+        BIRCH_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)2)),
+        JUNGLE_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)3)),
+        ACACIA_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)4)),
+        DARK_OAK_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)5));
 
         ItemStack item;
         Items(ItemStack item) {
@@ -54,7 +61,11 @@ public class ToolsPhase extends Phase{
 
     @Override
     public List<ItemStack> getPotentialItems() {
-        return null;
+        List<ItemStack> potentialItems = new ArrayList<>();
+        for(Items currentItem : Items.values()){
+            potentialItems.add(currentItem.item);
+        }
+        return potentialItems;
     }
 
     @Override

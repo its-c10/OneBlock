@@ -10,15 +10,18 @@ import me.c10coding.phases.Phase;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.Chest;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 import org.bukkit.material.Tree;
@@ -62,16 +65,11 @@ public class OneBlockListener implements Listener {
                         Material oldBlockMat = e.getBlock().getType();
                         Material newBlockMat = lm.getRandomMaterial(currentPhase);
                         Location dropLocation = new Location(blockLocation.getWorld(), blockLocation.getX() + 0.5, blockLocation.getY() + 2, blockLocation.getZ() + 0.5);
-
-                        /*
-                        Cancels the breaking of the block, drops the itemstack in a more desirable place to prevent it from falling
-                        Also sets the block to air to simulate the breaking of a block. Then it sets it to the new block
-                         */
-
                         ItemStack droppedItem = new ItemStack(oldBlockMat);
-                        List<Byte> log1Bytes = lm.getLog1ByteList();
 
-                        List<Byte> log2Bytes = lm.getLog2ByteList();
+                        if(lm.canSpawnMobs(currentPhase)){
+                            lm.spawnRandomMob(currentPhase);
+                        }
 
                         /*
                         Sets the dropped item as the proper log
@@ -81,16 +79,26 @@ public class OneBlockListener implements Listener {
                             droppedItem = setDroppedItem(mData);
                         }
 
+                         /*
+                        Cancels the breaking of the block, drops the itemstack in a more desirable place to prevent it from falling
+                        Also sets the block to air to simulate the breaking of a block. Then it sets it to the new block
+                         */
                         blockLocation.getBlock().setType(Material.AIR);
                         blockLocation.getBlock().setType(newBlockMat);
                         b.getWorld().dropItemNaturally(dropLocation, droppedItem);
-                        e.setCancelled(true);
+
+                        /*
+                        ALL THIS STUFF BELOW THIS COMMENT HAPPENS AFTER THE BLOCK HAS BEEN PLACED DOWN
+                         */
 
                         /*
                            Since there aren't different materials for the different logs, I adjust the data for the log here.
                            If the new material is something other than a log, it doesn't do anything
                          */
                         if(newBlockMat.equals(Material.LOG) || newBlockMat.equals(Material.LOG_2)){
+
+                            List<Byte> log1Bytes = lm.getLog1ByteList();
+                            List<Byte> log2Bytes = lm.getLog2ByteList();
 
                             Random rnd = new Random();
                             int randomNum;
@@ -103,10 +111,22 @@ public class OneBlockListener implements Listener {
                                 randomNum = rnd.nextInt(log2Bytes.size());
                                 chosenLog = log2Bytes.get(randomNum);
                             }
-
                             blockLocation.getBlock().setData(chosenLog);
+                        }else if(newBlockMat.equals(Material.CHEST)){
+                            Block block = blockLocation.getBlock();
+                            if(block.getState() instanceof InventoryHolder){
+                                InventoryHolder ih = (InventoryHolder) block.getState();
+                                if(ih instanceof Chest){
+                                    Chest chestBlock = (Chest) ih;
+                                    lm.setChestContents(chestBlock, currentPhase);
+                                }
+                            }
+                        }else if(newBlockMat.equals(Material.DIRT)){
+                            Block newBlock = blockLocation.getBlock();
+                            Random rnd = new Random();
+                            newBlock.setData((byte)rnd.nextInt(3));
                         }
-
+                        e.setCancelled(true);
                     }
                 }else{
                     e.setCancelled(true);
@@ -136,19 +156,13 @@ public class OneBlockListener implements Listener {
         }
     }
 
-    @EventHandler(ignoreCancelled = true)
-    public void onSandFall(EntityChangeBlockEvent event){
-        if(event.getEntityType()== EntityType.FALLING_BLOCK && event.getTo()== Material.AIR){
-            String blockWorldName = event.getBlock().getWorld().getName();
-            String pluginWorldName = plugin.getConfig().getString("World");
-            if(pluginWorldName != null){
-                if(blockWorldName.equalsIgnoreCase(pluginWorldName)){
-                    if(event.getBlock().getType() == Material.SAND){
-                        event.setCancelled(true);
-                        //Update the block to fix a visual client bug, but don't apply physics
-                        event.getBlock().getState().update(false, false);
-                    }
-                }
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+    private void onSandFall(EntityChangeBlockEvent event){
+        if(event.getEntityType()==EntityType.FALLING_BLOCK && event.getTo()==Material.AIR){
+            if(event.getBlock().getType().equals(Material.SAND) || event.getBlock().getType().equals(Material.GRAVEL)){
+                event.setCancelled(true);
+                //Update the block to fix a visual client bug, but don't apply physics
+                event.getBlock().getState().update(false, false);
             }
         }
     }

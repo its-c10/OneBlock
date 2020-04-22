@@ -10,17 +10,22 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.material.MaterialData;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class OneBlockLogicManager {
 
     private AreaConfigManager ac;
     private OneBlock plugin;
+    private Random rnd = new Random();
 
     public OneBlockLogicManager(OneBlock plugin){
         this.plugin = plugin;
@@ -51,7 +56,6 @@ public class OneBlockLogicManager {
 
     public Location generateNewLocation(){
 
-        Random rnd = new Random();
         FileConfiguration config = plugin.getConfig();
         int bounds = config.getInt("Bounds");
 
@@ -120,27 +124,38 @@ public class OneBlockLogicManager {
     }
 
     /*
+    Gets all the phases that your area has either surpassed or is on. Turns them into the actual class as well instead of just an enum
+     */
+    private List<Phase> getAreaPhases(Phase.Phases currentPhase){
+        List<Phase> areaPhases = new ArrayList<>();
+        List<Phase.Phases> phasesBefore = Phase.Phases.getAreaPhases(currentPhase);
+
+        for(Phase.Phases p : phasesBefore){
+            areaPhases.add(phaseEnumToClass(p));
+        }
+        return areaPhases;
+    }
+
+    /*
     Gets a random material from your current or previous phases to replace the infinite block
      */
     public Material getRandomMaterial(Phase.Phases phase){
 
-        Random rnd = new Random();
-        List<Phase.Phases> phasesBefore = Phase.Phases.getPhasesBefore(phase);
+        //The phases that come before the area's current phase
+        List<Phase> phasesBefore = getAreaPhases(phase);
+        final int chanceToObtainChest = plugin.getConfig().getInt("ChanceToObtainChest");
+
+        if(chanceToObtainChest > rnd.nextInt(100)){
+            return Material.CHEST;
+        }
 
         if(!phasesBefore.isEmpty()){
-            List<Phase> potentialPhases = new ArrayList<>();
             List<Material> potentialMaterials = new ArrayList<>();
-            /*
-            For loop creates all the potential classes of phases we can have
-             */
-            for(Phase.Phases p : phasesBefore){
-                potentialPhases.add(phaseEnumToClass(p));
-            }
 
             /*
             Get the phases' list of materials, and then add those materials to the potential materials.
              */
-            for(Phase p : potentialPhases){
+            for(Phase p : phasesBefore){
                 List<Material> phaseMaterials = p.getPotentialBlocks();
                 for(Material mat : phaseMaterials){
                     potentialMaterials.add(mat);
@@ -157,6 +172,74 @@ public class OneBlockLogicManager {
             return startPhaseBlockMats.get(randomNumMaterial);
         }
     }
+
+    public List<ItemStack> getRandomChestItems(Phase.Phases phase){
+
+        List<ItemStack> randomItems = new ArrayList<>();
+        List<Phase> phasesBefore = getAreaPhases(phase);
+        final int NUM_ITEMS_IN_CHEST = plugin.getConfig().getInt("NumItemsInChest");
+
+        if(!phasesBefore.isEmpty()){
+
+            List<ItemStack> allPotentialItems = new ArrayList<>();
+
+            for(Phase p : phasesBefore){
+                List<ItemStack> phaseItems = p.getPotentialItems();
+                for(ItemStack item : phaseItems){
+                    allPotentialItems.add(item);
+                }
+            }
+
+            /*
+            Adds however amount of items NUM_ITEMS_IN_CHEST says to
+             */
+            while(randomItems.size() != NUM_ITEMS_IN_CHEST){
+
+                int randIndex = rnd.nextInt(allPotentialItems.size());
+                // 1 - 15
+                int randAmount = rnd.nextInt(14) + 1;
+                ItemStack randomItem = allPotentialItems.get(randIndex);
+                randomItem.setAmount(randAmount);
+
+                List<Material> randomItemMaterials = new ArrayList<>();
+
+                for(ItemStack i : randomItems){
+                    randomItemMaterials.add(i.getType());
+                }
+
+                if(!randomItemMaterials.contains(randomItem.getType())){
+                    randomItems.add(randomItem);
+                }
+            }
+
+        }else{
+            /*
+            Adds however amount of items NUM_ITEMS_IN_CHEST says to
+             */
+            Phase startingPhase = new StartingPhase();
+            List<ItemStack> startingPhaseItems = startingPhase.getPotentialItems();
+            while(randomItems.size() != NUM_ITEMS_IN_CHEST){
+
+                int randIndex = rnd.nextInt(startingPhaseItems.size());
+                int randAmount = rnd.nextInt(15);
+                ItemStack randomItem = startingPhaseItems.get(randIndex);
+
+                List<Material> randomItemMaterials = new ArrayList<>();
+
+                for(ItemStack i : randomItems){
+                    randomItemMaterials.add(i.getType());
+                }
+
+                if(!randomItemMaterials.contains(randomItem.getType())){
+                    randomItems.add(randomItem);
+                }
+
+            }
+        }
+
+        return randomItems;
+
+      }
 
     public List<Byte> getLog1ByteList(){
 
@@ -188,4 +271,34 @@ public class OneBlockLogicManager {
 
     }
 
+    public void setChestContents(Chest c, Phase.Phases p){
+
+        Inventory chestInv = c.getBlockInventory();
+        List<ItemStack> randomItems = getRandomChestItems(p);
+        for(ItemStack item : randomItems){
+            int randomChestIndex = rnd.nextInt(chestInv.getSize());
+            chestInv.setItem(randomChestIndex, item);
+        }
+
+    }
+
+    /*
+    Gets to see if any mobs can spawn based on the phases your area is applicable to. (Your current phase and the phases before yours)
+     */
+    public boolean canSpawnMobs(Phase.Phases currentPhase){
+        List<Phase> areaPhases = getAreaPhases(currentPhase);
+        if(!areaPhases.isEmpty()){
+            for(Phase p : areaPhases){
+                if(p.hasMobs()){
+                   return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public void spawnRandomMob(Phase.Phases currentPhase) {
+
+    }
 }

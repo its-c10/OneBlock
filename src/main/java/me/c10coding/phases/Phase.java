@@ -48,14 +48,14 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
 
         STARTING_PHASE(0),
         TOOLS_PHASE(1),
-        TESTING_PHASE(2);
+        ORE_PHASE(2);
 
         private final int numPhase;
         Phases(int numPhase) {
             this.numPhase = numPhase;
         }
 
-        public static List<Phases> getPhasesBefore(Phases currentPhase){
+        public static List<Phases> getAreaPhases(Phases currentPhase){
 
             List<Phases> phasesArr = Arrays.asList(Phases.values());
             List<Phases> phasesBefore = new ArrayList<>();
