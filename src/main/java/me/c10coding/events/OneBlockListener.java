@@ -7,6 +7,7 @@ import me.c10coding.files.PlayersConfigManager;
 import me.c10coding.managers.OneBlockLogicManager;
 import me.c10coding.managers.OneBlockManager;
 import me.c10coding.phases.Phase;
+import me.c10coding.utils.Chat;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -20,23 +21,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
-import org.bukkit.material.Tree;
-import org.bukkit.material.Wool;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
+import java.util.UUID;
 
 public class OneBlockListener implements Listener {
 
     private OneBlock plugin;
     private AreaConfigManager acm;
     private OneBlockLogicManager lm;
+    private HashMap<UUID, ItemStack[]> playerInventoryMap = new HashMap<>();
 
     public OneBlockListener(OneBlock plugin){
         this.plugin = plugin;
@@ -90,6 +93,7 @@ public class OneBlockListener implements Listener {
                          */
                         blockLocation.getBlock().setType(Material.AIR);
                         blockLocation.getBlock().setType(newBlockMat);
+                        acm.updateBlockCount(p);
                         b.getWorld().dropItemNaturally(dropLocation, droppedItem);
 
                         /*
@@ -185,8 +189,57 @@ public class OneBlockListener implements Listener {
         }
     }
 
+     /*
+    Stores their items upon death in a hashmap
+     */
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent e){
+        boolean keepInv = plugin.getConfig().getBoolean("KeepInventory");
+        if(keepInv){
+            /*
+                If the world is null, then the config value for "World" hasn't been set.
+            */
+            World configWorld;
+            try{
+                configWorld = acm.getWorld();
+            }catch(NullPointerException n){
+                return;
+            }
+
+            if(e.getEntity() != null){
+                Player p = e.getEntity();
+                if(p.getLocation().getWorld().equals(configWorld)) {
+                    Inventory playerInv = p.getInventory();
+                    playerInventoryMap.put(p.getUniqueId(), playerInv.getContents());
+                    e.getKeepLevel();
+                }
+            }
+        }
+    }
+
+    /*
+        Gives the items back upon respawn if they're in the hashmap
+     */
+    @EventHandler
+    public void onPlayerRespawn(PlayerRespawnEvent e){
+        Player p = e.getPlayer();
+        if(playerInventoryMap.containsKey(p.getUniqueId())){
+            ItemStack[] playerContents = playerInventoryMap.get(p.getUniqueId());
+            p.getInventory().setContents(playerContents);
+            playerInventoryMap.remove(p.getUniqueId());
+
+            OneBlockManager obm = new OneBlockManager(plugin);
+            e.setRespawnLocation(obm.getTeleportLocation(p));
+
+        }
+    }
+
+
+
     public ItemStack setDroppedItem(MaterialData md){
         return md.getItemType().equals(Material.LOG) ? new ItemStack(Material.LOG, 1, md.getData()) : new ItemStack(Material.LOG_2, 1, md.getData());
     }
+
+
 
 }

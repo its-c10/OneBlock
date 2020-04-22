@@ -69,8 +69,11 @@ public class OneBlockLogicManager {
         return new Location(w, x, y, z);
     }
 
+    /*
+        If player is inside their own area
+     */
     public boolean isInsideArea(Player p){
-
+        ac.reloadConfig();
         Location loc = ac.getPlayerAreaLocation(p);
         Location playerLocation = p.getLocation();
         int size = plugin.getConfig().getInt("Size");
@@ -115,7 +118,7 @@ public class OneBlockLogicManager {
         return areaLocations.contains(b.getLocation());
     }
 
-    private Phase phaseEnumToClass(Phase.Phases phaseKey){
+    public Phase phaseEnumToClass(Phase.Phases phaseKey){
         switch(phaseKey){
             case STARTING_PHASE:
                 return new StartingPhase();
@@ -149,7 +152,7 @@ public class OneBlockLogicManager {
         List<Phase> phasesBefore = getAreaPhases(phase);
         final int chanceToObtainChest = plugin.getConfig().getInt("ChanceToObtainChest");
 
-        if(chanceToObtainChest > rnd.nextInt(100)){
+        if(chanceToObtainChest > rnd.nextInt(150)){
             return Material.CHEST;
         }
 
@@ -161,9 +164,7 @@ public class OneBlockLogicManager {
              */
             for(Phase p : phasesBefore){
                 List<Material> phaseMaterials = p.getPotentialBlocks();
-                for(Material mat : phaseMaterials){
-                    potentialMaterials.add(mat);
-                }
+                potentialMaterials.addAll(phaseMaterials);
             }
 
             int randomNumMaterial = rnd.nextInt(potentialMaterials.size());
@@ -189,9 +190,7 @@ public class OneBlockLogicManager {
 
             for(Phase p : phasesBefore){
                 List<ItemStack> phaseItems = p.getPotentialItems();
-                for(ItemStack item : phaseItems){
-                    allPotentialItems.add(item);
-                }
+                allPotentialItems.addAll(phaseItems);
             }
 
             /*

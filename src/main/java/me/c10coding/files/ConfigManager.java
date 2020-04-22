@@ -2,6 +2,7 @@ package me.c10coding.files;
 
 import me.c10coding.OneBlock;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -77,7 +78,7 @@ public class ConfigManager {
     }
 
     public String getPluginPrefix(){
-        return config.getString("Prefix");
+        return plugin.getConfig().getString("Prefix");
     }
 
     protected FileConfiguration getConfig(){
@@ -86,6 +87,11 @@ public class ConfigManager {
 
     public int getSize(){
         return config.getInt("Size");
+    }
+
+    public World getWorld() throws NullPointerException{
+        String worldValue = plugin.getConfig().getString("World");
+        return Bukkit.getWorld(worldValue);
     }
 
 

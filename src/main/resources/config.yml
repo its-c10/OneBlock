@@ -5,4 +5,5 @@ Bounds: 5000
 ChanceToObtainChest: 7
 ChanceToSpawnMob: 5
 NumItemsInChest: 5
+KeepInventory: true
 

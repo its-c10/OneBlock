@@ -30,6 +30,10 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
         return threshold;
     }
 
+    public Phases getKey(){
+        return phaseKey;
+    }
+
     /*
     Each Phase will return there mobs, items, and blocks different because they are enums
      */

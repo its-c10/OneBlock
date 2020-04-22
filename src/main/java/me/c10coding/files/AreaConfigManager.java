@@ -1,7 +1,9 @@
 package me.c10coding.files;
 
 import me.c10coding.OneBlock;
+import me.c10coding.managers.OneBlockLogicManager;
 import me.c10coding.phases.Phase;
+import me.c10coding.utils.Chat;
 import me.c10coding.utils.LocationSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,10 +12,7 @@ import org.bukkit.entity.Player;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class AreaConfigManager extends ConfigManager{
 
@@ -39,6 +38,8 @@ public class AreaConfigManager extends ConfigManager{
         config.set(path + ".Location", ls.toString(loc));
         config.set(path + ".DateCreated", dateFormat.format(date));
         config.set(path + ".Phase", Phase.Phases.STARTING_PHASE.name());
+        config.set(path + ".BlockCount", 0);
+
 
         saveConfig();
     }
@@ -56,6 +57,7 @@ public class AreaConfigManager extends ConfigManager{
         config.set(path + ".Location", null);
         config.set(path + ".DateCreated", null);
         config.set(path + ".Phase", null);
+        config.set(path + ".BlockCount", null);
 
         saveConfig();
     }
@@ -104,4 +106,69 @@ public class AreaConfigManager extends ConfigManager{
         return Phase.Phases.valueOf(phaseString);
     }
 
+    public void upgradePhase(Player player, Phase phase){
+
+        UUID playerUUID = player.getUniqueId();
+        List<Phase.Phases> allPhases = Arrays.asList(Phase.Phases.values());
+        //Gets the next phase after your phase
+        Phase.Phases nextPhase = allPhases.get(allPhases.indexOf(phase.getKey()) + 1);
+        config.set("Areas." + playerUUID + ".Phase", nextPhase.name());
+
+        /*
+        Congratulates the person
+         */
+        Chat.sendPlayerMessage("You have upgraded to the phase " + nextPhase.name() + "!", true, player, prefix);
+    }
+
+    public boolean isLastPhase(Phase.Phases p){
+        List<Phase.Phases> allPhases = Arrays.asList(Phase.Phases.values());
+        return allPhases.get(allPhases.size()-1).equals(p);
+    }
+
+    public void updateBlockCount(Player p){
+
+        OneBlockLogicManager lm = new OneBlockLogicManager(plugin);
+        UUID playerUUID = p.getUniqueId();
+        int currentBlockCount = config.getInt("Areas." + playerUUID + ".BlockCount");
+        Phase.Phases currentPhaseEnum = getPhase(p);
+        Phase currentPhase = lm.phaseEnumToClass(currentPhaseEnum);
+
+        Bukkit.broadcastMessage(currentBlockCount+"");
+        Bukkit.broadcastMessage(currentPhase.getThreshold()+"");
+
+        if(currentBlockCount == currentPhase.getThreshold() && !isLastPhase(currentPhaseEnum)){
+            upgradePhase(p, currentPhase);
+            currentBlockCount = 0;
+            config.set("Areas." + playerUUID + ".BlockCount", currentBlockCount);
+        }else{
+            currentBlockCount++;
+            config.set("Areas." + playerUUID + ".BlockCount", currentBlockCount);
+        }
+        saveConfig();
+    }
+
+    public void sethomeField(Player p) {
+        UUID playerUUID = p.getUniqueId();
+        config.set("Areas." + p.getUniqueId() + ".HomeLocation", ls.toString(p.getLocation()));
+        saveConfig();
+    }
+
+    public boolean hasHomeSet(Player p){
+        UUID playerUUId = p.getUniqueId();
+        String path = "Areas." + p.getUniqueId() + ".HomeLocation";
+        return config.get("Areas." + p.getUniqueId() + ".HomeLocation") != null;
+    }
+
+    public Location getAreaHomeLoc(Player p){
+        UUID playerUUID = p.getUniqueId();
+        String path = "Areas." + p.getUniqueId() + ".HomeLocation";
+        String locationLine = config.getString(path);
+        return ls.toLocationFromLine(locationLine);
+    }
+
+    public void delHome(Player p) {
+        UUID playerUUID = p.getUniqueId();
+        config.set("Areas." + p.getUniqueId() + ".HomeLocation", null);
+        saveConfig();
+    }
 }

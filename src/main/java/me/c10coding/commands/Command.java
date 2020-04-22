@@ -25,9 +25,13 @@ public class Command implements CommandExecutor {
             if(args[0].equalsIgnoreCase("create") && args.length == 1){
                 obManager.createArea(p);
             }else if(args[0].equals("home") && args.length == 1){
-
+                obManager.teleportHome(p);
             }else if(args[0].equals("delete") && args.length == 1){
                 obManager.deleteArea(p);
+            }else if(args[0].equals("sethome") && args.length == 1){
+                obManager.setHome(p);
+            }else if(args[0].equals("delhome") && args.length == 1){
+                obManager.delHome(p);
             }
         }
         return false;
