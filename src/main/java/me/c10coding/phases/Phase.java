@@ -3,6 +3,7 @@ package me.c10coding.phases;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
     Each Phase will return there mobs, items, and blocks different because they are enums
      */
     @Override
-    public abstract List<Entity> getSpawnableMobs();
+    public abstract List<EntityType> getSpawnableMobs();
 
     @Override
     public abstract List<ItemStack> getPotentialItems();

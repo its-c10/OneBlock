@@ -10,6 +10,7 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import me.c10coding.OneBlock;
 import me.c10coding.files.AreaConfigManager;
 import me.c10coding.files.ConfigManager;
+import me.c10coding.files.PlayerAreaConfigManager;
 import me.c10coding.utils.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -83,26 +84,24 @@ public class OneBlockManager {
             Chat.sendPlayerMessage("You don't have a area to delete!", true, p, prefix);
         }else{
 
-            p.performCommand("/spawn");
+            p.performCommand("spawn");
             Location playerAreaLoc = acm.getPlayerAreaLocation(p);
             int size = cm.getSize();
 
-            Location selection1 = new Location(playerAreaLoc.getWorld(), playerAreaLoc.getX() + size, playerAreaLoc.getY() - 100, playerAreaLoc.getZ() + size);
-            Location selection2 = new Location(playerAreaLoc.getWorld(), playerAreaLoc.getX() - size, 256, playerAreaLoc.getZ() - size);
+            PlayerAreaConfigManager pacm = new PlayerAreaConfigManager(plugin, "playerAreas/" + p.getUniqueId() + ".yml");
+            List<Block> allAreaBlocks = pacm.getAllBlocks();
+            //Adds the infinity block itself as well
+            allAreaBlocks.add(acm.getPlayerAreaLocation(p).getBlock());
 
-            Vector v1 = new Vector(selection1.getX(), selection1.getY(), selection1.getZ());
-            Vector v2 = new Vector(selection2.getX(), selection2.getY(), selection2.getZ());
-
-            CuboidSelection cs = new CuboidSelection(playerAreaLoc.getWorld(), v1, v2);
-            CuboidRegion cr = new CuboidRegion(v1,v2);
-
-            for(BlockVector block : cr){
-                Block bukkitBlock = BukkitUtil.toBlock(new BlockWorldVector(BukkitUtil.getLocalWorld(playerAreaLoc.getWorld()), block));
-                Bukkit.broadcastMessage(bukkitBlock.toString());
+            for(Block b : allAreaBlocks){
+                b.setType(Material.AIR);
             }
 
-
-            //acm.removePlayer(p);
+            /*
+            Removes the player from the Area config and deletes their player area file
+             */
+            acm.removePlayer(p);
+            pacm.deleteFile();
 
         }
     }

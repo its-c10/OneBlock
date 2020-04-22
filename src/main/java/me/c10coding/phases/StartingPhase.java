@@ -2,6 +2,7 @@ package me.c10coding.phases;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -50,7 +51,7 @@ public class StartingPhase extends Phase{
     }
 
     @Override
-    public List<Entity> getSpawnableMobs() {
+    public List<EntityType> getSpawnableMobs() {
         return null;
     }
 

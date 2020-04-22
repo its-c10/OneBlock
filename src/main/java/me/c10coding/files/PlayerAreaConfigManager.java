@@ -49,7 +49,7 @@ public class PlayerAreaConfigManager extends ConfigManager {
     /*
     Gets the block's locations from config and then uses Location Serializer to turn them back into blocks
      */
-    public List<Block> getAllBlockLocations(){
+    public List<Block> getAllBlocks(){
         List<Block> blocks = new ArrayList<>();
         List<String> blocksInConfig = config.getStringList("Blocks");
         for(String s : blocksInConfig){
@@ -58,6 +58,10 @@ public class PlayerAreaConfigManager extends ConfigManager {
             blocks.add(b);
         }
         return blocks;
+    }
+
+    public void deleteFile(){
+        file.delete();
     }
 
 }

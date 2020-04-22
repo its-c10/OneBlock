@@ -48,6 +48,7 @@ public class AreaConfigManager extends ConfigManager{
         UUID playerUUID = p.getUniqueId();
         String path = "Areas." + p.getUniqueId();
         List<String> playersWithAreas = config.getStringList("PlayersWithAreas");
+
         playersWithAreas.remove(playerUUID.toString());
         config.set("PlayersWithAreas", playersWithAreas);
 

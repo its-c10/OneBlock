@@ -2,6 +2,7 @@ package me.c10coding.managers;
 
 import me.c10coding.OneBlock;
 import me.c10coding.files.AreaConfigManager;
+import me.c10coding.phases.OrePhase;
 import me.c10coding.phases.Phase;
 import me.c10coding.phases.StartingPhase;
 import me.c10coding.phases.ToolsPhase;
@@ -12,6 +13,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -119,6 +121,8 @@ public class OneBlockLogicManager {
                 return new StartingPhase();
             case TOOLS_PHASE:
                 return new ToolsPhase();
+            case ORE_PHASE:
+                return new OrePhase();
         }
         return new StartingPhase();
     }
@@ -287,18 +291,30 @@ public class OneBlockLogicManager {
      */
     public boolean canSpawnMobs(Phase.Phases currentPhase){
         List<Phase> areaPhases = getAreaPhases(currentPhase);
+        boolean hasMobs = false;
         if(!areaPhases.isEmpty()){
             for(Phase p : areaPhases){
                 if(p.hasMobs()){
-                   return false;
+                    hasMobs = true;
                 }
             }
-            return true;
         }
-        return false;
+        return hasMobs;
     }
 
-    public void spawnRandomMob(Phase.Phases currentPhase) {
-
+    /*
+    Gets a random mob type
+     */
+    public EntityType getRandomMob(Phase.Phases currentPhase) {
+        List<Phase> areaPhases = getAreaPhases(currentPhase);
+        List<EntityType> potentialMobTypes = new ArrayList<>();
+        for(Phase p : areaPhases){
+            if(p.hasMobs()){
+                List<EntityType> mobs = p.getSpawnableMobs();
+                potentialMobTypes.addAll(mobs);
+            }
+        }
+        //Returns a random mob type based on the size of the list
+        return potentialMobTypes.get(rnd.nextInt(potentialMobTypes.size()));
     }
 }

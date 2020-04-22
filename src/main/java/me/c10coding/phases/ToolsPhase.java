@@ -2,6 +2,7 @@ package me.c10coding.phases;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -10,7 +11,7 @@ import java.util.List;
 public class ToolsPhase extends Phase{
 
     public ToolsPhase(){
-        super(Phases.TOOLS_PHASE, 100);
+        super(Phases.TOOLS_PHASE, 50);
     }
 
     /*
@@ -48,14 +49,14 @@ public class ToolsPhase extends Phase{
         ACACIA_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)4)),
         DARK_OAK_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)5));
 
-        ItemStack item;
+        private ItemStack item;
         Items(ItemStack item) {
             this.item = item;
         }
     }
 
     @Override
-    public List<Entity> getSpawnableMobs() {
+    public List<EntityType> getSpawnableMobs() {
         return null;
     }
 

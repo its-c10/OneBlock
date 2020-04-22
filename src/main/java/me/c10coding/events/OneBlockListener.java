@@ -66,9 +66,14 @@ public class OneBlockListener implements Listener {
                         Material newBlockMat = lm.getRandomMaterial(currentPhase);
                         Location dropLocation = new Location(blockLocation.getWorld(), blockLocation.getX() + 0.5, blockLocation.getY() + 2, blockLocation.getZ() + 0.5);
                         ItemStack droppedItem = new ItemStack(oldBlockMat);
+                        Random rnd = new Random();
 
                         if(lm.canSpawnMobs(currentPhase)){
-                            lm.spawnRandomMob(currentPhase);
+                            final int CHANCE_SPAWN_MOB = plugin.getConfig().getInt("ChanceToSpawnMob");
+                            if(CHANCE_SPAWN_MOB > rnd.nextInt(100)){
+                                EntityType mobType = lm.getRandomMob(currentPhase);
+                                blockLocation.getWorld().spawnEntity(dropLocation, mobType);
+                            }
                         }
 
                         /*
@@ -100,7 +105,6 @@ public class OneBlockListener implements Listener {
                             List<Byte> log1Bytes = lm.getLog1ByteList();
                             List<Byte> log2Bytes = lm.getLog2ByteList();
 
-                            Random rnd = new Random();
                             int randomNum;
                             Byte chosenLog;
 
@@ -123,7 +127,6 @@ public class OneBlockListener implements Listener {
                             }
                         }else if(newBlockMat.equals(Material.DIRT)){
                             Block newBlock = blockLocation.getBlock();
-                            Random rnd = new Random();
                             newBlock.setData((byte)rnd.nextInt(3));
                         }
                         e.setCancelled(true);
