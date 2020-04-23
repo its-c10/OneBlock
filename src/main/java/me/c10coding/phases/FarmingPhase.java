@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrePhase extends Phase{
+public class FarmingPhase extends Phase{
 
-    public OrePhase() {
-        super(Phases.ORE_PHASE, 100);
+    public FarmingPhase() {
+        super(Phases.FARMING_PHASE, 100);
     }
 
     /*
@@ -18,14 +18,14 @@ public class OrePhase extends Phase{
      */
     public enum Blocks{
 
-        STONE(Material.STONE),
-        COBBLESTONE(Material.COBBLESTONE),
-        COAL_ORE(Material.COAL_ORE),
-        COAL_BLOCK(Material.COAL_BLOCK),
-        IRON_ORE(Material.IRON_ORE),
-        LEAVES(Material.LEAVES),
-        LEAVES_2(Material.LEAVES_2),
-        BRICKS(Material.BRICK);
+        GRANITE(Material.STONE),
+        POLISHED_GRANITE(Material.STONE),
+        DIORITE(Material.STONE),
+        POLISHED_DIORITE(Material.STONE),
+        ANDESITE(Material.STONE),
+        POLISHED_ANDESITE(Material.STONE),
+        HAY(Material.HAY_BLOCK),
+        MYCELIUM(Material.MYCEL);
 
         private Material mat;
         Blocks(Material mat){
@@ -36,17 +36,17 @@ public class OrePhase extends Phase{
 
     public enum Items{
 
-        COAL(new ItemStack(Material.COAL)),
-        IRON(new ItemStack(Material.IRON_INGOT)),
-        WHEAT(new ItemStack(Material.WHEAT)),
-        STICK(new ItemStack(Material.STICK)),
-        PAPER(new ItemStack(Material.PAPER)),
-        FLOWER(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 0)),
-        FLOWER_2(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 1)),
-        FLOWER_3(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 2)),
-        FLOWER_4(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 3)),
-        FLOWER_5(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 4)),
-        FLOWER_6(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 5));
+        MELON_SEEDS(new ItemStack(Material.MELON_SEEDS)),
+        MELON(new ItemStack(Material.MELON)),
+        PUMPKIN_SEEDS(new ItemStack(Material.PUMPKIN_SEEDS)),
+        SEEDS(new ItemStack(Material.SEEDS)),
+        POTATO(new ItemStack(Material.POTATO)),
+        CARROT(new ItemStack(Material.CARROT)),
+        WATER_BUCKET(new ItemStack(Material.WATER_BUCKET)),
+        LILY(new ItemStack(Material.WATER_LILY)),
+        FEATHER(new ItemStack(Material.FEATHER)),
+        CACTUS(new ItemStack(Material.CACTUS)),
+        FISHING_ROD(new ItemStack(Material.FISHING_ROD));
 
         private ItemStack item;
         Items(ItemStack item) {
@@ -57,9 +57,12 @@ public class OrePhase extends Phase{
 
     public enum Mobs{
 
-        ZOMBIE(EntityType.SILVERFISH),
-        SLIME(EntityType.SLIME),
-        PIG(EntityType.PIG);
+        SKELETON(EntityType.SKELETON),
+        SPIDER(EntityType.SPIDER),
+        SHEEP(EntityType.SHEEP),
+        COW(EntityType.COW),
+        MUSHROOM_COW(EntityType.MUSHROOM_COW),
+        CHICKEN(EntityType.CHICKEN);
 
         private EntityType mobType;
         Mobs(EntityType e){

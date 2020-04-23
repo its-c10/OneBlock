@@ -5,7 +5,6 @@ import me.c10coding.OneBlock;
 import me.c10coding.utils.LocationSerializer;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;

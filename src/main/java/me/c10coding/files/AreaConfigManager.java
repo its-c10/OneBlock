@@ -5,10 +5,12 @@ import me.c10coding.managers.OneBlockLogicManager;
 import me.c10coding.phases.Phase;
 import me.c10coding.utils.Chat;
 import me.c10coding.utils.LocationSerializer;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
+import org.bukkit.*;
+import org.bukkit.block.Biome;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -112,12 +114,31 @@ public class AreaConfigManager extends ConfigManager{
         List<Phase.Phases> allPhases = Arrays.asList(Phase.Phases.values());
         //Gets the next phase after your phase
         Phase.Phases nextPhase = allPhases.get(allPhases.indexOf(phase.getKey()) + 1);
+        Location playerLocation = player.getLocation();
+        World playerWorld = player.getWorld();
         config.set("Areas." + playerUUID + ".Phase", nextPhase.name());
 
         /*
         Congratulates the person
          */
-        Chat.sendPlayerMessage("You have upgraded to the phase " + nextPhase.name() + "!", true, player, prefix);
+        Chat.sendPlayerMessage("&lYou have upgraded to the " + nextPhase.format() + "!", true, player, prefix);
+        if(nextPhase.equals(Phase.Phases.FARMING_PHASE)){
+            Chat.sendPlayerMessage("&lQuick note: You will get a water bucket this phase :)", true, player, prefix);
+        }else if(nextPhase.equals(Phase.Phases.WINTER_PHASE)){
+            Chat.sendPlayerMessage("&lLet it snow!", true, player, prefix);
+        }else if(nextPhase.equals(Phase.Phases.NETHER_PHASE)){
+            Chat.sendPlayerMessage("&lYou're in hell...", true, player, prefix);
+        }else if(nextPhase.equals(Phase.Phases.ADVANCEMENT_PHASE)){
+            Chat.sendPlayerMessage("&lThings are going to get pretty &oadvanced", true, player, prefix);
+            //playerWorld.setBiome((int) playerLocation.getX() * 16, (int) playerLocation.getZ() * 16, Biome.BEACH);
+        }else if(nextPhase.equals(Phase.Phases.DECORATION_PHASE)){
+            Chat.sendPlayerMessage("&lI hope you have a house to decorate, because you're going to get a lot of decoration items and blocks this phase!", true, player, prefix);
+        }else if(nextPhase.equals(Phase.Phases.END_PHASE)){
+            Chat.sendPlayerMessage("&lYou are on the last phase! When you get to the last block of this phase, you will obtain materials to make a end portal!", true, player, prefix);
+        }
+
+        player.getWorld().spawnEntity(playerLocation, EntityType.SPLASH_POTION);
+
     }
 
     public boolean isLastPhase(Phase.Phases p){
@@ -133,17 +154,19 @@ public class AreaConfigManager extends ConfigManager{
         Phase.Phases currentPhaseEnum = getPhase(p);
         Phase currentPhase = lm.phaseEnumToClass(currentPhaseEnum);
 
-        Bukkit.broadcastMessage(currentBlockCount+"");
-        Bukkit.broadcastMessage(currentPhase.getThreshold()+"");
-
         if(currentBlockCount == currentPhase.getThreshold() && !isLastPhase(currentPhaseEnum)){
             upgradePhase(p, currentPhase);
             currentBlockCount = 0;
-            config.set("Areas." + playerUUID + ".BlockCount", currentBlockCount);
         }else{
+            if(isLastPhase(currentPhaseEnum) && currentBlockCount == currentPhase.getThreshold()){
+                Inventory playerInv = p.getInventory();
+                playerInv.addItem(new ItemStack(Material.ENDER_PORTAL_FRAME, 12));
+                Chat.sendPlayerMessage("You're a boss! You have reached the threshold of the last phase. Take these end portal frames and go kill the end dragon! Good luck.", true, p, prefix);
+                Chat.sendPlayerMessage("Quick tip: The last eye of ender must be facing IN the portal for the portal to properly form!", true, p, prefix);
+            }
             currentBlockCount++;
-            config.set("Areas." + playerUUID + ".BlockCount", currentBlockCount);
         }
+        config.set("Areas." + playerUUID + ".BlockCount", currentBlockCount);
         saveConfig();
     }
 

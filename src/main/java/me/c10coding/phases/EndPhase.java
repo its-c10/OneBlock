@@ -7,46 +7,34 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class StartingPhase extends Phase{
+public class EndPhase extends Phase{
 
-    public StartingPhase() {
-        super(Phases.STARTING_PHASE, 10);
+    public EndPhase(){
+        super(Phases.END_PHASE, 450);
     }
 
     /*
-    Potential blocks
+        Potential blocks
      */
     public enum Blocks{
 
-        DIRT(Material.DIRT),
-        GRASS(Material.GRASS),
-        CLAY(Material.CLAY),
-        SAND(Material.SAND),
-        MELON_BLOCK(Material.MELON_BLOCK);
+        SPONGE(Material.SPONGE),
+        ENDSTONE(Material.ENDER_STONE);
 
-        Material mat;
+        private Material mat;
         Blocks(Material mat){
             this.mat = mat;
         }
 
     }
 
-    /*
-    Potential Items
-     */
     public enum Items{
 
-        GRASS(new ItemStack(Material.GRASS)),
-        SUGAR_CANE(new ItemStack(Material.SUGAR_CANE)),
-        SUGAR(new ItemStack(Material.SUGAR)),
-        ROSE(new ItemStack(Material.RED_ROSE)),
-        WEB(new ItemStack(Material.WEB)),
-        BROWN_MUSHROOM(new ItemStack(Material.BROWN_MUSHROOM)),
-        RED_MUSHROOM(new ItemStack(Material.RED_MUSHROOM)),
-        VINE(new ItemStack(Material.VINE)),
-        COOKIE(new ItemStack(Material.COOKIE));
+        NAME_TAG(new ItemStack(Material.NAME_TAG)),
+        MAP(new ItemStack(Material.MAP)),
+        PAINTING(new ItemStack(Material.PAINTING));
 
-        ItemStack item;
+        private ItemStack item;
         Items(ItemStack item) {
             this.item = item;
         }
@@ -79,4 +67,5 @@ public class StartingPhase extends Phase{
     public boolean hasMobs() {
         return false;
     }
+
 }

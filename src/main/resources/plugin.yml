@@ -9,4 +9,3 @@ commands:
   oneblock:
     aliases:
       - ob
-    usage: "Basic command for OneBlock"

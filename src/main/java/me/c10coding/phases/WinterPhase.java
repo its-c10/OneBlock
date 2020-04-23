@@ -7,10 +7,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrePhase extends Phase{
+public class WinterPhase extends Phase{
 
-    public OrePhase() {
-        super(Phases.ORE_PHASE, 100);
+    public WinterPhase(){
+        super(Phases.WINTER_PHASE, 150);
     }
 
     /*
@@ -18,14 +18,10 @@ public class OrePhase extends Phase{
      */
     public enum Blocks{
 
-        STONE(Material.STONE),
-        COBBLESTONE(Material.COBBLESTONE),
-        COAL_ORE(Material.COAL_ORE),
-        COAL_BLOCK(Material.COAL_BLOCK),
-        IRON_ORE(Material.IRON_ORE),
-        LEAVES(Material.LEAVES),
-        LEAVES_2(Material.LEAVES_2),
-        BRICKS(Material.BRICK);
+        ICE_BLOCK(Material.ICE),
+        LAPIS(Material.LAPIS_ORE),
+        LAPIS_BLOCK(Material.LAPIS_BLOCK),
+        PACKED_ICE(Material.PACKED_ICE);
 
         private Material mat;
         Blocks(Material mat){
@@ -36,17 +32,9 @@ public class OrePhase extends Phase{
 
     public enum Items{
 
-        COAL(new ItemStack(Material.COAL)),
-        IRON(new ItemStack(Material.IRON_INGOT)),
-        WHEAT(new ItemStack(Material.WHEAT)),
-        STICK(new ItemStack(Material.STICK)),
-        PAPER(new ItemStack(Material.PAPER)),
-        FLOWER(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 0)),
-        FLOWER_2(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 1)),
-        FLOWER_3(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 2)),
-        FLOWER_4(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 3)),
-        FLOWER_5(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 4)),
-        FLOWER_6(new ItemStack(Material.DOUBLE_PLANT, 1, (byte) 5));
+        SNOW(new ItemStack(Material.SNOW)),
+        SNOW_BALL(new ItemStack(Material.SNOW_BALL)),
+        SNOW_BLOCK(new ItemStack(Material.SNOW_BLOCK));
 
         private ItemStack item;
         Items(ItemStack item) {
@@ -57,9 +45,9 @@ public class OrePhase extends Phase{
 
     public enum Mobs{
 
-        ZOMBIE(EntityType.SILVERFISH),
-        SLIME(EntityType.SLIME),
-        PIG(EntityType.PIG);
+        SNOWMAN(EntityType.SNOWMAN),
+        POLAR_BEAR(EntityType.CREEPER),
+        WOLF(EntityType.WOLF);
 
         private EntityType mobType;
         Mobs(EntityType e){
@@ -99,4 +87,5 @@ public class OrePhase extends Phase{
     public boolean hasMobs() {
         return true;
     }
+
 }

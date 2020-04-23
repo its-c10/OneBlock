@@ -1,8 +1,8 @@
 package me.c10coding.utils;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class Chat {
 

@@ -1,18 +1,10 @@
 package me.c10coding.managers;
 
-import com.sk89q.worldedit.*;
-import com.sk89q.worldedit.bukkit.BukkitUtil;
-import com.sk89q.worldedit.bukkit.WorldEditPlugin;
-import com.sk89q.worldedit.bukkit.adapter.BukkitImplAdapter;
-import com.sk89q.worldedit.bukkit.selections.CuboidSelection;
-import com.sk89q.worldedit.bukkit.selections.Selection;
-import com.sk89q.worldedit.regions.CuboidRegion;
 import me.c10coding.OneBlock;
 import me.c10coding.files.AreaConfigManager;
 import me.c10coding.files.ConfigManager;
 import me.c10coding.files.PlayerAreaConfigManager;
 import me.c10coding.utils.Chat;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -33,7 +25,6 @@ public class OneBlockManager {
     private AreaConfigManager acm;
     private ConfigManager cm;
     private String prefix;
-    WorldEditPlugin worldEdit = (WorldEditPlugin) Bukkit.getServer().getPluginManager().getPlugin("WorldEdit");
 
     public OneBlockManager(OneBlock plugin){
         this.plugin = plugin;
@@ -48,7 +39,7 @@ public class OneBlockManager {
         if(!acm.hasArea(p.getUniqueId())){
 
             Location uniqueLocation = logicManager.generateUniqueLocation();
-            Location teleportationLoc = new Location(uniqueLocation.getWorld(), uniqueLocation.getBlockX(), uniqueLocation.getY() + 1, uniqueLocation.getBlockZ());
+            Location teleportationLoc = new Location(uniqueLocation.getWorld(), uniqueLocation.getBlockX() + 0.5, uniqueLocation.getY() + 1, uniqueLocation.getBlockZ() + 0.5);
 
             acm.insertPlayer(p, uniqueLocation);
 
@@ -109,16 +100,24 @@ public class OneBlockManager {
         }
     }
 
+    public Location getInfiteBlockLocation(Player p) {
+        Location infiniteBlockLocation = acm.getPlayerAreaLocation(p);
+        infiniteBlockLocation.setY(infiniteBlockLocation.getY()+1);
+        infiniteBlockLocation.setX(infiniteBlockLocation.getBlockX() + 0.5);
+        infiniteBlockLocation.setZ(infiniteBlockLocation.getBlockZ() + 0.5);
+        return infiniteBlockLocation;
+    }
+
+    /*
+    If you have a home set, you will go to that home. If you don't have a home set you will go to the infinite block location
+     */
     public Location getTeleportLocation(Player p){
         Location teleportationLocation = null;
         if(acm.hasArea(p.getUniqueId())) {
             if (acm.hasHomeSet(p)) {
                 teleportationLocation = acm.getAreaHomeLoc(p);
             } else {
-                teleportationLocation = acm.getPlayerAreaLocation(p);
-                teleportationLocation.setY(teleportationLocation.getY() + 1);
-                teleportationLocation.setX(teleportationLocation.getX() + 0.5);
-                teleportationLocation.setZ(teleportationLocation.getZ() + 0.5);
+                teleportationLocation = getInfiteBlockLocation(p);
             }
 
             while(!teleportationLocation.getBlock().getType().equals(Material.AIR)){
@@ -162,9 +161,21 @@ public class OneBlockManager {
             }else{
                 Chat.sendPlayerMessage("&lYou are not inside your own region!", true, p, prefix);
             }
-
         }
+    }
 
+
+
+    /*
+    Teleports you to the infite block instead of your home (in case the home isn't on air)
+     */
+    public void teleportToOrigin(Player p) {
+        if(acm.hasArea(p.getUniqueId())) {
+            p.teleport(getInfiteBlockLocation(p));
+            Chat.sendPlayerMessage("Teleporting you to the infinite block location...", true, p, prefix);
+        }else{
+            Chat.sendPlayerMessage("You don't have an area!", true, p, prefix);
+        }
     }
 
     public void delHome(Player p) {
@@ -179,4 +190,16 @@ public class OneBlockManager {
             Chat.sendPlayerMessage("&lYou don't even have a area to delete the home of silly!", true, p, prefix);
         }
     }
+
+    public void sendHelp(Player p){
+        Chat.sendPlayerMessage("Command list: ", true, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob create &r&lcreates a new area for you", false, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob home &r&ltakes you to your area. If you have a home set, it will take you to that home. If not, you will be teleported to the infinite block", false, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob home origin &r&lteleports you to your infinite blocks' location. This comes in handy if the home you set isn't in a safe location", false, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob sethome &r&lallows you to set a home at your current location", false, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob delhome &r&ldeletes the home you have set previously", false, p, prefix);
+        Chat.sendPlayerMessage("&6&l/ob delete &r&ldeletes your area. Be careful with this!", false, p, prefix);
+    }
+
+
 }

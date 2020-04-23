@@ -7,13 +7,13 @@ import me.c10coding.files.PlayersConfigManager;
 import me.c10coding.managers.OneBlockLogicManager;
 import me.c10coding.managers.OneBlockManager;
 import me.c10coding.phases.Phase;
-import me.c10coding.utils.Chat;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockState;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -29,10 +29,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
+import java.util.*;
 
 public class OneBlockListener implements Listener {
 
@@ -54,85 +51,98 @@ public class OneBlockListener implements Listener {
             Player p = e.getPlayer();
             Block b = e.getBlock();
             Location blockLocation = b.getLocation();
+            World blockWorld = blockLocation.getWorld();
+            World configWorld = acm.getWorld();
             //Refreshes the config for those that just got an area
             acm.reloadConfig();
-            if(acm.hasArea(p.getUniqueId())){
-                //If the block is within their own region
-                if(lm.isInsideArea(b, p)){
-                    if(!lm.isInfiniteBlock(b)){
-                        PlayerAreaConfigManager pacm = new PlayerAreaConfigManager(plugin, "playerAreas/" + p.getUniqueId() + ".yml");
-                        pacm.removeBlock(b);
-                    }else{
+            if(blockWorld.equals(configWorld)){
+                if(acm.hasArea(p.getUniqueId())){
+                    //If the block is within their own region
+                    if(lm.isInsideArea(b, p)){
+                        if(!lm.isInfiniteBlock(b)){
+                            PlayerAreaConfigManager pacm = new PlayerAreaConfigManager(plugin, "playerAreas/" + p.getUniqueId() + ".yml");
+                            pacm.removeBlock(b);
+                        }else{
 
-                        Phase.Phases currentPhase = acm.getPhase(p);
-                        Material oldBlockMat = e.getBlock().getType();
-                        Material newBlockMat = lm.getRandomMaterial(currentPhase);
-                        Location dropLocation = new Location(blockLocation.getWorld(), blockLocation.getX() + 0.5, blockLocation.getY() + 2, blockLocation.getZ() + 0.5);
-                        ItemStack droppedItem = new ItemStack(oldBlockMat);
-                        Random rnd = new Random();
+                            Phase.Phases currentPhase = acm.getPhase(p);
+                            Material oldBlockMat = e.getBlock().getType();
+                            Material newBlockMat = lm.getRandomMaterial(currentPhase);
+                            Location dropLocation = new Location(blockLocation.getWorld(), blockLocation.getX() + 0.5, blockLocation.getY() + 2, blockLocation.getZ() + 0.5);
+                            Random rnd = new Random();
+                            ItemStack droppedItem = new ItemStack(oldBlockMat);
 
-                        if(lm.canSpawnMobs(currentPhase)){
-                            final int CHANCE_SPAWN_MOB = plugin.getConfig().getInt("ChanceToSpawnMob");
-                            if(CHANCE_SPAWN_MOB > rnd.nextInt(100)){
-                                EntityType mobType = lm.getRandomMob(currentPhase);
-                                blockLocation.getWorld().spawnEntity(dropLocation, mobType);
+                            if(lm.canSpawnMobs(currentPhase)){
+                                final int CHANCE_SPAWN_MOB = plugin.getConfig().getInt("ChanceToSpawnMob");
+                                int randomNum = rnd.nextInt(100);
+                                if(CHANCE_SPAWN_MOB > randomNum){
+                                    EntityType mobType = lm.getRandomMob(currentPhase);
+                                    blockLocation.getWorld().spawnEntity(dropLocation, mobType);
+                                }
                             }
-                        }
 
                         /*
-                        Sets the dropped item as the proper log
+                        Sets the dropped item as the proper block
                          */
-                        if(oldBlockMat.equals(Material.LOG) || oldBlockMat.equals(Material.LOG_2)) {
-                            MaterialData mData = e.getBlock().getState().getData();
-                            droppedItem = setDroppedItem(mData);
-                        }
-
+                        List<Material> multiDrops = Arrays.asList(Material.MELON_BLOCK, Material.CLAY, Material.COAL_ORE, Material.DIAMOND_ORE, Material.EMERALD_ORE, Material.LAPIS_ORE, Material.QUARTZ_ORE, Material.REDSTONE_ORE, Material.GLOWING_REDSTONE_ORE);
+                            if(multiDrops.contains(e.getBlock().getType())){
+                                Collection<ItemStack> drops = blockLocation.getBlock().getDrops();
+                                for(ItemStack drop : drops){
+                                    b.getWorld().dropItem(dropLocation, drop);
+                                }
+                            }else{
+                                MaterialData mData = e.getBlock().getState().getData();
+                                droppedItem = setDroppedItem(mData);
+                                b.getWorld().dropItemNaturally(dropLocation, droppedItem);
+                            }
                          /*
                         Cancels the breaking of the block, drops the itemstack in a more desirable place to prevent it from falling
                         Also sets the block to air to simulate the breaking of a block. Then it sets it to the new block
                          */
-                        blockLocation.getBlock().setType(Material.AIR);
-                        blockLocation.getBlock().setType(newBlockMat);
-                        acm.updateBlockCount(p);
-                        b.getWorld().dropItemNaturally(dropLocation, droppedItem);
+                            blockLocation.getBlock().setType(Material.AIR);
+                            blockLocation.getBlock().setType(newBlockMat);
+                            acm.updateBlockCount(p);
 
                         /*
                         ALL THIS STUFF BELOW THIS COMMENT HAPPENS AFTER THE BLOCK HAS BEEN PLACED DOWN
                          */
 
                         /*
-                           Since there aren't different materials for the different logs, I adjust the data for the log here.
-                           If the new material is something other than a log, it doesn't do anything
+                           Since there aren't different materials for the different logs, I adjust the data for the block here.
                          */
-                        if(newBlockMat.equals(Material.LOG) || newBlockMat.equals(Material.LOG_2)){
-
-                            List<Byte> log1Bytes = lm.getLog1ByteList();
-                            List<Byte> log2Bytes = lm.getLog2ByteList();
-
-                            int randomNum;
-                            Byte chosenLog;
-
-                            if(newBlockMat.equals(Material.LOG)){
-                                randomNum = rnd.nextInt(log1Bytes.size());
-                                chosenLog = log1Bytes.get(randomNum);
-                            }else{
-                                randomNum = rnd.nextInt(log2Bytes.size());
-                                chosenLog = log2Bytes.get(randomNum);
-                            }
-                            blockLocation.getBlock().setData(chosenLog);
-                        }else if(newBlockMat.equals(Material.CHEST)){
-                            Block block = blockLocation.getBlock();
-                            if(block.getState() instanceof InventoryHolder){
-                                InventoryHolder ih = (InventoryHolder) block.getState();
-                                if(ih instanceof Chest){
-                                    Chest chestBlock = (Chest) ih;
-                                    lm.setChestContents(chestBlock, currentPhase);
-                                }
-                            }
-                        }else if(newBlockMat.equals(Material.DIRT)){
                             Block newBlock = blockLocation.getBlock();
-                            newBlock.setData((byte)rnd.nextInt(3));
+                            if(newBlockMat.equals(Material.LOG)) {
+                                newBlock.setData((byte) rnd.nextInt(3));
+                            }else if(newBlockMat.equals(Material.LOG_2)){
+                                newBlock.setData((byte) rnd.nextInt(1));
+                            }else if(newBlockMat.equals(Material.CHEST)){
+                                Block block = blockLocation.getBlock();
+                                if(block.getState() instanceof InventoryHolder){
+                                    InventoryHolder ih = (InventoryHolder) block.getState();
+                                    if(ih instanceof Chest){
+                                        Chest chestBlock = (Chest) ih;
+                                        lm.setChestContents(chestBlock, currentPhase);
+                                    }
+                                }
+                            }else if(newBlockMat.equals(Material.DIRT)){
+                                newBlock.setData((byte)rnd.nextInt(3));
+                            }else if(newBlockMat.equals(Material.STONE)){
+                                newBlock.setData((byte)rnd.nextInt(6));
+                            }else if(newBlockMat.equals(Material.WOOL)){
+                                newBlock.setData((byte)rnd.nextInt(15));
+                            }else if(newBlockMat.equals(Material.STAINED_CLAY)){
+                                newBlock.setData((byte)rnd.nextInt(15));
+                            }else if(newBlockMat.equals(Material.STAINED_GLASS_PANE)){
+                                newBlock.setData((byte)rnd.nextInt(15));
+                            }else if(newBlockMat.equals(Material.STAINED_GLASS)){
+                                newBlock.setData((byte)rnd.nextInt(15));
+                            }else if(newBlockMat.equals(Material.LEAVES)){
+                                newBlock.setData((byte)rnd.nextInt(3));
+                            }else if(newBlockMat.equals(Material.LEAVES_2)){
+                                newBlock.setData((byte)rnd.nextInt(1));
+                            }
+                            e.setCancelled(true);
                         }
+                    }else{
                         e.setCancelled(true);
                     }
                 }else{
@@ -140,6 +150,7 @@ public class OneBlockListener implements Listener {
                 }
             }
         }
+
     }
 
     @EventHandler
@@ -158,6 +169,8 @@ public class OneBlockListener implements Listener {
                     }else{
                         e.setCancelled(true);
                     }
+                }else{
+                    e.setCancelled(true);
                 }
             }
         }
@@ -229,7 +242,7 @@ public class OneBlockListener implements Listener {
             playerInventoryMap.remove(p.getUniqueId());
 
             OneBlockManager obm = new OneBlockManager(plugin);
-            e.setRespawnLocation(obm.getTeleportLocation(p));
+            e.setRespawnLocation(obm.getInfiteBlockLocation(p));
 
         }
     }
@@ -237,7 +250,7 @@ public class OneBlockListener implements Listener {
 
 
     public ItemStack setDroppedItem(MaterialData md){
-        return md.getItemType().equals(Material.LOG) ? new ItemStack(Material.LOG, 1, md.getData()) : new ItemStack(Material.LOG_2, 1, md.getData());
+        return new ItemStack(md.getItemType(), 1, md.getData());
     }
 
 

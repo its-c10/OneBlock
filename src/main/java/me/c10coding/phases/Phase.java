@@ -1,8 +1,6 @@
 package me.c10coding.phases;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
@@ -53,7 +51,13 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
 
         STARTING_PHASE(0),
         TOOLS_PHASE(1),
-        ORE_PHASE(2);
+        ORE_PHASE(2),
+        FARMING_PHASE(3),
+        WINTER_PHASE(4),
+        NETHER_PHASE(5),
+        ADVANCEMENT_PHASE(6),
+        DECORATION_PHASE(7),
+        END_PHASE(8);
 
         private final int numPhase;
         Phases(int numPhase) {
@@ -72,6 +76,11 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
                 }
             }
             return phasesBefore;
+        }
+
+        public String format(){
+            String keyName = this.name();
+            return keyName.replace("_" ," ");
         }
     }
 }

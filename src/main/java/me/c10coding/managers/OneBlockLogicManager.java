@@ -2,10 +2,7 @@ package me.c10coding.managers;
 
 import me.c10coding.OneBlock;
 import me.c10coding.files.AreaConfigManager;
-import me.c10coding.phases.OrePhase;
-import me.c10coding.phases.Phase;
-import me.c10coding.phases.StartingPhase;
-import me.c10coding.phases.ToolsPhase;
+import me.c10coding.phases.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,14 +11,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.material.MaterialData;
 
-import java.util.*;
-import java.util.stream.Stream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class OneBlockLogicManager {
 
@@ -126,6 +122,18 @@ public class OneBlockLogicManager {
                 return new ToolsPhase();
             case ORE_PHASE:
                 return new OrePhase();
+            case FARMING_PHASE:
+                return new FarmingPhase();
+            case WINTER_PHASE:
+                return new WinterPhase();
+            case NETHER_PHASE:
+                return new NetherPhase();
+            case ADVANCEMENT_PHASE:
+                return new AdvancementPhase();
+            case DECORATION_PHASE:
+                return new DecorationPhase();
+            case END_PHASE:
+                return new EndPhase();
         }
         return new StartingPhase();
     }
@@ -200,9 +208,12 @@ public class OneBlockLogicManager {
 
                 int randIndex = rnd.nextInt(allPotentialItems.size());
                 // 1 - 15
-                int randAmount = rnd.nextInt(14) + 1;
                 ItemStack randomItem = allPotentialItems.get(randIndex);
-                randomItem.setAmount(randAmount);
+
+                if(!randomItem.getType().equals(Material.WATER_BUCKET) && !randomItem.getType().equals(Material.COMPASS) && !randomItem.getType().equals(Material.LAVA_BUCKET)){
+                    int randAmount = rnd.nextInt(14) + 1;
+                    randomItem.setAmount(randAmount);
+                }
 
                 List<Material> randomItemMaterials = new ArrayList<>();
 

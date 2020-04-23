@@ -1,7 +1,6 @@
 package me.c10coding.phases;
 
 import org.bukkit.Material;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
 
@@ -47,7 +46,10 @@ public class ToolsPhase extends Phase{
         BIRCH_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)2)),
         JUNGLE_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)3)),
         ACACIA_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)4)),
-        DARK_OAK_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)5));
+        DARK_OAK_SAPLING(new ItemStack(Material.SAPLING, 1, (byte)5)),
+
+        FLINT(new ItemStack(Material.FLINT)),
+        GLASS(new ItemStack(Material.GLASS));
 
         private ItemStack item;
         Items(ItemStack item) {
