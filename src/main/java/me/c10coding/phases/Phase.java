@@ -1,5 +1,6 @@
 package me.c10coding.phases;
 
+import me.c10coding.OneBlock;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.inventory.ItemStack;
@@ -14,10 +15,10 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
     final private String phaseName;
     final private int threshold;
 
-    public Phase(Phases phase, int threshold){
+    public Phase(Phases phase){
         this.phaseName = phase.name();
         this.phaseKey = phase;
-        this.threshold = threshold;
+        this.threshold = setPhaseThreshold();
     }
 
     public String getName(){
@@ -59,6 +60,7 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
         DECORATION_PHASE(7),
         END_PHASE(8);
 
+
         private final int numPhase;
         Phases(int numPhase) {
             this.numPhase = numPhase;
@@ -82,5 +84,9 @@ public abstract class Phase implements PhasePotientials, PhaseCharacteristics{
             String keyName = this.name();
             return keyName.replace("_" ," ");
         }
+    }
+
+    public int setPhaseThreshold(){
+        return OneBlock.getInstance().getConfig().getInt(phaseKey.toString());
     }
 }

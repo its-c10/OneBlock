@@ -134,8 +134,9 @@ public class OneBlockLogicManager {
                 return new DecorationPhase();
             case END_PHASE:
                 return new EndPhase();
+            default:
+                return new StartingPhase();
         }
-        return new StartingPhase();
     }
 
     /*

@@ -10,7 +10,7 @@ import java.util.List;
 public class StartingPhase extends Phase{
 
     public StartingPhase() {
-        super(Phases.STARTING_PHASE, 10);
+        super(Phases.STARTING_PHASE);
     }
 
     /*

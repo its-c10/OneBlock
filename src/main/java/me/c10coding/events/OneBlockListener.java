@@ -64,12 +64,29 @@ public class OneBlockListener implements Listener {
                             pacm.removeBlock(b);
                         }else{
 
+                            /*Velocity test */
+
                             Phase.Phases currentPhase = acm.getPhase(p);
                             Material oldBlockMat = e.getBlock().getType();
                             Material newBlockMat = lm.getRandomMaterial(currentPhase);
                             Location dropLocation = new Location(blockLocation.getWorld(), blockLocation.getX() + 0.5, blockLocation.getY() + 2, blockLocation.getZ() + 0.5);
                             Random rnd = new Random();
                             ItemStack droppedItem = new ItemStack(oldBlockMat);
+
+                            /*
+                                Fixes the issue when you're on top of the chest and you go through the chest while trying to mine it.
+                             */
+                            if(oldBlockMat.equals(Material.CHEST)){
+
+                                Location playerLoc = p.getLocation();
+                                Location locUnderPlayer = new Location(playerLoc.getWorld(),playerLoc.getBlockX(), playerLoc.getBlockY(), playerLoc.getBlockZ());
+                                Block blockUnderPlayer = locUnderPlayer.getBlock();
+
+                                if(blockUnderPlayer.equals(b)){
+                                    playerLoc.setY(playerLoc.getY()+0.18);
+                                    p.teleport(playerLoc);
+                                }
+                            }
 
                             if(lm.canSpawnMobs(currentPhase)){
                                 final int CHANCE_SPAWN_MOB = plugin.getConfig().getInt("ChanceToSpawnMob");
@@ -98,10 +115,8 @@ public class OneBlockListener implements Listener {
                         Cancels the breaking of the block, drops the itemstack in a more desirable place to prevent it from falling
                         Also sets the block to air to simulate the breaking of a block. Then it sets it to the new block
                          */
-                            blockLocation.getBlock().setType(Material.AIR);
                             blockLocation.getBlock().setType(newBlockMat);
                             acm.updateBlockCount(p);
-
                         /*
                         ALL THIS STUFF BELOW THIS COMMENT HAPPENS AFTER THE BLOCK HAS BEEN PLACED DOWN
                          */

@@ -10,7 +10,7 @@ import java.util.List;
 public class DecorationPhase extends Phase{
 
     public DecorationPhase(){
-        super(Phases.DECORATION_PHASE, 300);
+        super(Phases.DECORATION_PHASE);
     }
 
     /*

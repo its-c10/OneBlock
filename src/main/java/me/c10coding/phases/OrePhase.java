@@ -10,7 +10,7 @@ import java.util.List;
 public class OrePhase extends Phase{
 
     public OrePhase() {
-        super(Phases.ORE_PHASE, 100);
+        super(Phases.ORE_PHASE);
     }
 
     /*

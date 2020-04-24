@@ -10,7 +10,7 @@ import java.util.List;
 public class EndPhase extends Phase{
 
     public EndPhase(){
-        super(Phases.END_PHASE, 450);
+        super(Phases.END_PHASE);
     }
 
     /*

@@ -10,7 +10,7 @@ import java.util.List;
 public class NetherPhase extends Phase{
 
     public NetherPhase() {
-        super(Phases.NETHER_PHASE, 100);
+        super(Phases.NETHER_PHASE);
     }
 
     /*

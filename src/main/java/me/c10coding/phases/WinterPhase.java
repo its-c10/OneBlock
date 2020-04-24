@@ -10,7 +10,7 @@ import java.util.List;
 public class WinterPhase extends Phase{
 
     public WinterPhase(){
-        super(Phases.WINTER_PHASE, 150);
+        super(Phases.WINTER_PHASE);
     }
 
     /*

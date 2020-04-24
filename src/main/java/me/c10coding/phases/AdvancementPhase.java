@@ -10,7 +10,7 @@ import java.util.List;
 public class AdvancementPhase extends Phase{
 
     public AdvancementPhase(){
-        super(Phases.ADVANCEMENT_PHASE, 200);
+        super(Phases.ADVANCEMENT_PHASE);
     }
 
     /*

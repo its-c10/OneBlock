@@ -6,4 +6,18 @@ ChanceToObtainChest: 7
 ChanceToSpawnMob: 5
 NumItemsInChest: 5
 KeepInventory: true
+AreaSpacingAmount: 20
+
+#Phase Thresholds
+STARTING_PHASE: 10
+TOOLS_PHASE: 50
+ORE_PHASE: 100
+FARMING_PHASE: 100
+WINTER_PHASE: 150
+NETHER_PHASE: 100
+ADVANCEMENT_PHASE: 200
+DECORATION_PHASE: 300
+END_PHASE: 450
+
+
 

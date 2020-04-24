@@ -10,7 +10,7 @@ import java.util.List;
 public class ToolsPhase extends Phase{
 
     public ToolsPhase(){
-        super(Phases.TOOLS_PHASE, 50);
+        super(Phases.TOOLS_PHASE);
     }
 
     /*

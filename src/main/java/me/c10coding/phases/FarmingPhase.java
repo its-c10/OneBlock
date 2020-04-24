@@ -10,7 +10,7 @@ import java.util.List;
 public class FarmingPhase extends Phase{
 
     public FarmingPhase() {
-        super(Phases.FARMING_PHASE, 100);
+        super(Phases.FARMING_PHASE);
     }
 
     /*
