@@ -31,7 +31,7 @@ public class OneBlockLogicManager {
     }
 
     public Location generateUniqueLocation(){
-
+        ac.reloadConfig();
         Location newLocation = new Location(ac.getWorld(), 0, 100, 0);
         List<Location> allRegionLocs = ac.getAllAreaLocations();
         //The current number region that needs to be created
@@ -45,39 +45,75 @@ public class OneBlockLogicManager {
         }else{
             //Number at the top right corner of each square
             double squareBlockCount = 8;
+            double previousSquareBlockCount = 0;
             int squareLength = 3;
             int moveAmount = 2;
+            int areaSizeAndBuffer = areaBufferSize + areaSize;
+
             /*
             This gives me the proper square size
              */
-            while(regionNum <= squareBlockCount){
-                squareLength++;
+
+            while(regionNum > squareBlockCount){
+                previousSquareBlockCount = squareBlockCount;
+                squareLength+=2;
                 moveAmount+=2;
                 squareBlockCount = Math.pow(squareLength, 2) - 1;
             }
+
             Location previousLocation = allRegionLocs.get(indexRegionNum);
-            /*
-            This is the last block of this square
-             */
+
+            //Link for visual number grid https://docs.google.com/spreadsheets/d/1MtfeK0DT5o4PqcT9fbL6UsBwhwYpRBDbsPRicfNeDtI/edit?usp=sharing
+
+            Bukkit.broadcastMessage("Index: " + (indexRegionNum+1));
+            Bukkit.broadcastMessage("Square block count: " + squareBlockCount);
+            Bukkit.broadcastMessage("Square length: " + squareLength);
+            Bukkit.broadcastMessage("Move amount: " + moveAmount);
+
             if(regionNum == squareBlockCount){
+            //This is the last block of the square (8, 24, 48, 80, etc)
+                Bukkit.broadcastMessage("we are moving to the next square! This is the last block of this square");
+                newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
+            }else if(regionNum >= squareBlockCount - moveAmount){
+                Bukkit.broadcastMessage("Position: Top");
+                //If the region num is on the top side of the square (Example: 8 - 2 = 6. x >= 6)
 
-            //If the region num is on the top side of the square
-            }else if(squareBlockCount - moveAmount >= regionNum && regionNum > ){
-                //The area that needs to be made is a corner block
+                //The area that needs to be made is a corner block (i.e 6 // top left corner)
                 if(squareBlockCount - moveAmount == regionNum){
-                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() + (areaBufferSize + areaSize));
+                    //Going from 5 to 6 requires you to move up, so I add to the Z value
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() + areaSizeAndBuffer);
                 }else{
-                    newLocation = new Location(previousLocation.getWorld(), prev)
+                    //This is if it's not a corner block and it's just a number between the squareBlockCount and the top left corner block
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
                 }
-            //If the region num is on the left side of the square
-            }else if(squareBlockCount - (moveAmount * 2) >= regionNum){
-
-            //If the region num is on the bottom side of the square
-            }else if(squareBlockCount - (moveAmount * 3) >= regionNum){
-
+            }else if(regionNum >= squareBlockCount - (moveAmount * 2)){
+                Bukkit.broadcastMessage("Position: Left");
+                //If the region num is on the left side of the square (Example: 8 - 4 = 4. x >=  4)
+                if(squareBlockCount - (moveAmount * 2) == regionNum){
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() - areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
+                }else{
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() + areaSizeAndBuffer);
+                }
+            }else if(regionNum >= squareBlockCount - (moveAmount * 3)){
+                Bukkit.broadcastMessage("Position: Bottom");
+                //If the region num is on the bottom side of the square (Example: 8 - 6 = 2. x >= 2)
+                if(squareBlockCount - (moveAmount * 3) == regionNum){
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() - areaSizeAndBuffer);
+                }else{
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() - areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
+                }
             }else {
-                //You are on the right side of the square.
-
+                Bukkit.broadcastMessage("Position: Right");
+                if(regionNum == (previousSquareBlockCount+1)){
+                    //If the region number is the one starting the new square i.e. 1 or 9
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
+                }else{
+                    if(regionNum < 8){
+                        newLocation = new Location(previousLocation.getWorld(), areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ() - areaSizeAndBuffer);
+                    }else{
+                        newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() - areaSizeAndBuffer);
+                    }
+                }
             }
         }
 
