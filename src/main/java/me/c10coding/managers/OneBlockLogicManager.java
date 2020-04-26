@@ -32,24 +32,56 @@ public class OneBlockLogicManager {
 
     public Location generateUniqueLocation(){
 
-        Location freshLocation;
-        List<Location> allAreaLocations = ac.getAllAreaLocations();
+        Location newLocation = new Location(ac.getWorld(), 0, 100, 0);
+        List<Location> allRegionLocs = ac.getAllAreaLocations();
+        //The current number region that needs to be created
+        int regionNum = allRegionLocs.size();
+        int indexRegionNum = regionNum - 1;
+        int areaSize = plugin.getConfig().getInt("Size");
+        int areaBufferSize = plugin.getConfig().getInt("AreaSpacingAmount");
 
-        freshLocation = generateNewLocation();
+        if(allRegionLocs.isEmpty()){
+            return newLocation;
+        }else{
+            //Number at the top right corner of each square
+            double squareBlockCount = 8;
+            int squareLength = 3;
+            int moveAmount = 2;
+            /*
+            This gives me the proper square size
+             */
+            while(regionNum <= squareBlockCount){
+                squareLength++;
+                moveAmount+=2;
+                squareBlockCount = Math.pow(squareLength, 2) - 1;
+            }
+            Location previousLocation = allRegionLocs.get(indexRegionNum);
+            /*
+            This is the last block of this square
+             */
+            if(regionNum == squareBlockCount){
 
-        if(!allAreaLocations.isEmpty()){
-            for(Location l : allAreaLocations){
-                /*
-                The area must be within 250 blocks away from each other
-                 */
-                while(l.distance(freshLocation) < 250){
-                    freshLocation = generateNewLocation();
-                    Bukkit.broadcastMessage(freshLocation.toString());
+            //If the region num is on the top side of the square
+            }else if(squareBlockCount - moveAmount >= regionNum && regionNum > ){
+                //The area that needs to be made is a corner block
+                if(squareBlockCount - moveAmount == regionNum){
+                    newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() + (areaBufferSize + areaSize));
+                }else{
+                    newLocation = new Location(previousLocation.getWorld(), prev)
                 }
+            //If the region num is on the left side of the square
+            }else if(squareBlockCount - (moveAmount * 2) >= regionNum){
+
+            //If the region num is on the bottom side of the square
+            }else if(squareBlockCount - (moveAmount * 3) >= regionNum){
+
+            }else {
+                //You are on the right side of the square.
+
             }
         }
 
-        return freshLocation;
+        return newLocation;
     }
 
     public Location generateNewLocation(){
