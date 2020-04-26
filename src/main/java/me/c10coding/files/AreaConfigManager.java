@@ -42,24 +42,46 @@ public class AreaConfigManager extends ConfigManager{
         config.set(path + ".Phase", Phase.Phases.STARTING_PHASE.name());
         config.set(path + ".BlockCount", 0);
 
-
         saveConfig();
     }
 
     public void removePlayer(Player p){
 
         UUID playerUUID = p.getUniqueId();
+        UUID randomUUID = UUID.randomUUID();
         String path = "Areas." + p.getUniqueId();
         List<String> playersWithAreas = config.getStringList("PlayersWithAreas");
+        int index = playersWithAreas.indexOf(playerUUID.toString());
 
-        playersWithAreas.remove(playerUUID.toString());
+        //playersWithAreas.remove(playerUUID.toString());
+        /*
+        If they are at the end of the array, just go ahead and add them back. If they are in the middle, make sure the placeholder is in the spot
+         */
+        if(index != playersWithAreas.size()){
+            playersWithAreas.set(index, randomUUID.toString());
+        }else{
+            playersWithAreas.remove(playerUUID.toString());
+            playersWithAreas.add(randomUUID.toString());
+        }
         config.set("PlayersWithAreas", playersWithAreas);
 
-        config.set(path, null);
+        String location = config.getString(path + ".Location");
+        String dateCreated = config.getString(path + ".DateCreated");
+        String phase = config.getString(path + ".Phase");
+        String blockCount = config.getString(path + ".BlockCount");
+
         config.set(path + ".Location", null);
         config.set(path + ".DateCreated", null);
         config.set(path + ".Phase", null);
         config.set(path + ".BlockCount", null);
+        config.set(path, null);
+
+        path = "Areas." + randomUUID;
+
+        config.set(path + ".Location", location);
+        config.set(path + ".DateCreated", dateCreated);
+        config.set(path + ".Phase", phase);
+        config.set(path + ".BlockCount", blockCount);
 
         saveConfig();
     }
@@ -83,7 +105,6 @@ public class AreaConfigManager extends ConfigManager{
         List<UUID> playerUUIDsWithAreas = getPlayerUUIDsWithAreas();
 
         for(UUID u : playerUUIDsWithAreas){
-            OfflinePlayer op = Bukkit.getOfflinePlayer(u);
             String line = config.getString("Areas." + u + ".Location");
             Location loc = ls.toLocationFromLine(line);
             areaLocs.add(loc);

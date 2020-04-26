@@ -164,8 +164,6 @@ public class OneBlockManager {
         }
     }
 
-
-
     /*
     Teleports you to the infite block instead of your home (in case the home isn't on air)
      */

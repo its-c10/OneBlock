@@ -56,8 +56,8 @@ public class OneBlockLogicManager {
 
             while(regionNum > squareBlockCount){
                 previousSquareBlockCount = squareBlockCount;
-                squareLength+=2;
-                moveAmount+=2;
+                squareLength += 2;
+                moveAmount += 2;
                 squareBlockCount = Math.pow(squareLength, 2) - 1;
             }
 
@@ -65,19 +65,11 @@ public class OneBlockLogicManager {
 
             //Link for visual number grid https://docs.google.com/spreadsheets/d/1MtfeK0DT5o4PqcT9fbL6UsBwhwYpRBDbsPRicfNeDtI/edit?usp=sharing
 
-            Bukkit.broadcastMessage("Index: " + (indexRegionNum+1));
-            Bukkit.broadcastMessage("Square block count: " + squareBlockCount);
-            Bukkit.broadcastMessage("Square length: " + squareLength);
-            Bukkit.broadcastMessage("Move amount: " + moveAmount);
-
             if(regionNum == squareBlockCount){
             //This is the last block of the square (8, 24, 48, 80, etc)
-                Bukkit.broadcastMessage("we are moving to the next square! This is the last block of this square");
                 newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
             }else if(regionNum >= squareBlockCount - moveAmount){
-                Bukkit.broadcastMessage("Position: Top");
                 //If the region num is on the top side of the square (Example: 8 - 2 = 6. x >= 6)
-
                 //The area that needs to be made is a corner block (i.e 6 // top left corner)
                 if(squareBlockCount - moveAmount == regionNum){
                     //Going from 5 to 6 requires you to move up, so I add to the Z value
@@ -87,7 +79,6 @@ public class OneBlockLogicManager {
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
                 }
             }else if(regionNum >= squareBlockCount - (moveAmount * 2)){
-                Bukkit.broadcastMessage("Position: Left");
                 //If the region num is on the left side of the square (Example: 8 - 4 = 4. x >=  4)
                 if(squareBlockCount - (moveAmount * 2) == regionNum){
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() - areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
@@ -95,7 +86,6 @@ public class OneBlockLogicManager {
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() + areaSizeAndBuffer);
                 }
             }else if(regionNum >= squareBlockCount - (moveAmount * 3)){
-                Bukkit.broadcastMessage("Position: Bottom");
                 //If the region num is on the bottom side of the square (Example: 8 - 6 = 2. x >= 2)
                 if(squareBlockCount - (moveAmount * 3) == regionNum){
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX(), previousLocation.getY(), previousLocation.getZ() - areaSizeAndBuffer);
@@ -103,7 +93,6 @@ public class OneBlockLogicManager {
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() - areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
                 }
             }else {
-                Bukkit.broadcastMessage("Position: Right");
                 if(regionNum == (previousSquareBlockCount+1)){
                     //If the region number is the one starting the new square i.e. 1 or 9
                     newLocation = new Location(previousLocation.getWorld(), previousLocation.getX() + areaSizeAndBuffer, previousLocation.getY(), previousLocation.getZ());
@@ -184,8 +173,6 @@ public class OneBlockLogicManager {
 
     public Phase phaseEnumToClass(Phase.Phases phaseKey){
         switch(phaseKey){
-            case STARTING_PHASE:
-                return new StartingPhase();
             case TOOLS_PHASE:
                 return new ToolsPhase();
             case ORE_PHASE:
